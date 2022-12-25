@@ -4,14 +4,17 @@ from google.cloud import videointelligence
 from google.cloud import storage
 from google.cloud.storage import Blob
 
+storage_from_local_pc = "storage_from_local_pc"
+result_bucket = "result_bucket_video"
+
 # [START transfer_files_to_result_bucket_func]
 def transfer_files_to_result_bucket(event,context):
     file = event
     file_name = file['name']
 
     storage_client = storage.Client()
-    source_bucket = storage_client.get_bucket('transfer_from_on-prem')
-    destination_bucket = storage_client.get_bucket('result_videointelligence')
+    source_bucket = storage_client.get_bucket(storage_from_local_pc)
+    destination_bucket = storage_client.get_bucket(result_bucket)
     
     blobs=list(source_bucket.list_blobs())
     print(blobs)
@@ -40,9 +43,9 @@ def videointelligence_func(event, context):
     split_file = os.path.splitext(file_name)
     file_text_name = split_file[0]
 
-    gcs_uri = "gs://result_videointelligence/"+file_name
+    gcs_uri = f"gs://{result_bucket}/"+file_name
 
-    output_uri = "gs://result_videointelligence/{}.json".format(file_text_name)
+    output_uri = f"gs://{result_bucket}/{}.json".format(file_text_name)
     
     video_client = videointelligence.VideoIntelligenceServiceClient()
 
