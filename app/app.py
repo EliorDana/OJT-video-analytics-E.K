@@ -5,7 +5,7 @@ from google.cloud import storage
 
 execution_path = os.getcwd()
 storage_client = storage.Client()
-bucket_name = "bucket_api_results"
+bucket_name = "result_bucket_video"
 
 app = Flask(__name__, template_folder='templates')
 CORS(app)
