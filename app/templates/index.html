@@ -1,0 +1,107 @@
+<html lang="en">
+    <head>
+        <meta charset=""UTF-8">
+        <title>Kaleidoo Video Intelligence Management System</title>
+        <link rel="icon" type="image/png" href="static/assets/icon.png" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css') }}">
+        <meta name="description" content="Interactive visualiser for the Google Cloud Video Intelligence API.">
+        <meta name="keywords" content="google cloud, video, intelligence, api, video intelligence api, google cloud">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-N80GH8KX9W"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-N80GH8KX9W', {client_storage: 'none'});
+        </script>
+    </head>
+    <body>
+        <form id="app"  class="mdl-layout--fixed-header">
+            <header class="mdl-layout__header">
+                <div class="mdl-layout-icon">
+                    <img class="logo" src="static/assets/icon.png">
+                </div>
+                <div class="mdl-layout__header-row">
+                    <span class="mdl-layout-title">E.D Video Intelligence Visualiser</span>
+                </div>
+            </header>
+            <div id="video-conatiner">
+                <canvas id="my_canvas" width="800" height="500"></canvas>
+                <video id="video" controls autoplay></video>
+            </div>
+            <div id="upload-data">
+                <div class="upload-area" ondrop="drop_video(event)" ondragover="drag_enter(event)">
+                    <p>Upload video from PC</p>
+                    <input id="video_input" type="file" accept="video/*" />
+                </div>
+                <div class="upload-area" ondrop="drop_json(event)" ondragover="drag_enter(event)">
+                    <p>Your .json</p>
+                    <input id="json_input" type="file" accept="application/JSON" />
+                </div>
+            </div>
+            <div v-if="data_misaligned" class="data-warning">
+                It looks like the json data dosn't align with the video file, are you sure you have all of the right files
+                uploaded?
+            </div>
+            <div>
+            <annotations-nav v-bind:title_ids_dict="title_ids_dict" v-bind:detected_features="detected_features"
+                v-bind:current_view="current_view" v-on:nav-clicked="set_current_view">
+            </annotations-nav>
+
+            <object-tracking-viz v-if="current_view == 'Object Tracking'" id="object_tracks" v-bind:json_data="json_data"
+                v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></object-tracking-viz>
+
+            <label-detection-viz v-if="current_view == 'Label Detection'" id="label_detection" v-bind:json_data="json_data"
+                v-bind:video_info="video_info" v-on:segment-clicked="jump_video"></label-detection-viz>
+
+            <shot-detection-viz v-if="current_view == 'Shot Detection'" id="shot_detection" v-bind:json_data="json_data"
+                v-bind:video_info="video_info" v-on:shot-clicked="jump_video"></shot-detection-viz>
+
+            <speech-transcription-viz v-if="current_view == 'Speech Transcription'" id="speech_transcription"
+                v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:word-clicked="jump_video">
+            </speech-transcription-viz>
+
+            <person-detection-viz v-if="current_view == 'Person Detection'" id="person_detection"
+                v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+            </person-detection-viz>
+
+            <face-detection-viz v-if="current_view == 'Face Detection'" id="face_detection" v-bind:json_data="json_data"
+                v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+            </face-detection-viz>
+
+            <logo-recognition-viz v-if="current_view == 'Logo Recognition'" id="logo_recognition"
+                v-bind:json_data="json_data" v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+            </logo-recognition-viz>
+
+            <text-detection-viz v-if="current_view == 'Text Detection'" id="text_detection" v-bind:json_data="json_data"
+                v-bind:video_info="video_info" v-on:segment-clicked="jump_video">
+            </text-detection-viz>
+
+            <explicit-content-detection-viz v-if="current_view == 'Explicit Content Detection'"
+                id="explicit_content_detection" v-bind:json_data="json_data" v-bind:video_info="video_info"
+                v-on:shot-clicked="jump_video">
+            </explicit-content-detection-viz>
+
+        </div>
+    </form>>
+        <div id="filename" style="visibility:hidden">{{filename}}</div>
+        <script src="static/utils/utils.js"></script>
+        <script src="static/components/object_tracking.js"></script>
+        <script src="static/components/label_detection.js"></script>
+        <script src="static/components/shot_detection.js"></script>
+        <script src="static/components/speech_transcription.js"></script>
+        <script src="static/components/person_detection.js"></script>
+        <script src="static/components/face_detection.js"></script>
+        <script src="static/components/logo_recognition.js"></script>
+        <script src="static/components/text_detection.js"></script>
+        <script src="static/components/explicit_content_detection.js"></script>
+        <script src="static/components/script.js"></script>
+        <script src="static/components/handle_video.js"></script>
+    </body>
+</html>
