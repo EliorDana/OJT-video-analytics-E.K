@@ -45,7 +45,7 @@ def videointelligence_func(event, context):
 
     gcs_uri = f"gs://{result_bucket}/"+file_name
 
-    output_uri = f"gs://{result_bucket}/{}.json".format(file_text_name)
+    output_uri = f"gs://{result_bucket}/{file_text_name}.json"
     
     video_client = videointelligence.VideoIntelligenceServiceClient()
 
