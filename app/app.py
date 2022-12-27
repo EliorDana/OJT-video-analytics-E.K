@@ -2,6 +2,8 @@ import os
 from flask import Flask, request, send_from_directory, render_template,Response
 from flask_cors import CORS, cross_origin
 from google.cloud import storage
+import sys
+
 
 execution_path = os.getcwd()
 storage_client = storage.Client()
@@ -10,20 +12,44 @@ bucket_name = "result_bucket_video"
 app = Flask(__name__, template_folder='templates')
 CORS(app)
 
-@app.route("/", methods= ['GET','POST'])
-@cross_origin()
-def homepage():
-    if request.headers.get('X-Goog-Authenticated-User-Email'):
-        email = request.headers.get('X-Goog-Authenticated-User-Email')
-        return render_template("index.html", email=email)
-    else:
-        return render_template("index.html")
+def validate_assertion(assertion):
+    """Checks that the JWT assertion is valid (properly signed, for the
+    correct audience) and if so, returns strings for the requesting user's
+    email and a persistent user ID. If not valid, returns None for each field.
+    """
+    from jose import jwt
 
-@app.route("/print", methods= ['GET'])
-def console():
-    email = request.headers.get('X-Goog-Authenticated-User-Email')
-    return f"console.log('{email} has authenticated');"
+    try:
+        info = jwt.decode(
+            assertion,
+            certs(),
+            algorithms=['ES256'],
+            audience=audience()
+            )
+        return info['email'], info['sub']
+    except Exception as e:
+        print('Failed to validate assertion: {}'.format(e), file=sys.stderr)
+        return None, None
 
+@app.route('/', methods=['GET', 'POST'])
+def say_hello():
+    from flask import request
+
+    assertion = request.headers.get('X-Goog-IAP-JWT-Assertion')
+    email, id = validate_assertion(assertion)
+    page = "<h1>Hello {}</h1>".format(email)
+    return page
+
+# @app.route("/", methods= ['GET','POST'])
+# @cross_origin()
+# def homepage():
+#     print("----------------------< MY PRINT >--------------------------")
+#     if request.headers.get('X-Goog-Authenticated-User-Email'):
+#         email = request.headers.get('X-Goog-Authenticated-User-Email')
+#         print(f"email: {email}")
+#         return render_template("index.html", email=email)
+#     else:
+#         return render_template("index.html")
 
 # @app.route("/", methods= ['GET','POST'])
 # @cross_origin()
