@@ -77,6 +77,7 @@ def validate_assertion(assertion):
             algorithms=['ES256'],
             audience=audience()
             )
+        print("info: ",info)
         return info['email'], info['sub']
     except Exception as e:
         print('Failed to validate assertion: {}'.format(e), file=sys.stderr)
@@ -89,7 +90,7 @@ def say_hello():
 
     assertion = request.headers.get('X-Goog-IAP-JWT-Assertion')
     email, id = validate_assertion(assertion)
-    page = "<h1>Hello {}</h1>".format(email)
+    page = "<h1>Hello {}</h1>".format(assertion)
     return page
 
 # @app.route("/", methods= ['GET','POST'])
