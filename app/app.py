@@ -11,15 +11,19 @@ app = Flask(__name__, template_folder='templates')
 CORS(app)
 
 @app.route("/", methods= ['GET','POST'])
-# Identify who is entering my website with identity aware proxy google cloud platform
 @cross_origin()
 def homepage():
     if request.headers.get('X-Goog-Authenticated-User-Email'):
         email = request.headers.get('X-Goog-Authenticated-User-Email')
-        print(email)
         return render_template("index.html", email=email)
     else:
         return render_template("index.html")
+
+@app.route("/console", methods= ['GET'])
+def console():
+    email = request.headers.get('X-Goog-Authenticated-User-Email')
+    return f"console.log('{email} has authenticated');"
+
 
 # @app.route("/", methods= ['GET','POST'])
 # @cross_origin()
