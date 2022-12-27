@@ -19,7 +19,7 @@ def homepage():
     else:
         return render_template("index.html")
 
-@app.route("/console", methods= ['GET'])
+@app.route("/print", methods= ['GET'])
 def console():
     email = request.headers.get('X-Goog-Authenticated-User-Email')
     return f"console.log('{email} has authenticated');"
